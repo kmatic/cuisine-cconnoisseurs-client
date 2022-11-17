@@ -70,6 +70,9 @@ router.delete(
 
 // USER
 
+// get all users
+router.get('/users', userController.getUsers)
+
 // signup user
 router.post('/signup', userController.signup); 
 
