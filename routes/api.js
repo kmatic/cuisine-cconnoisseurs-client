@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const passport = require('passport');
 
 // import controllers
 const commentController = require('../controllers/commentController');
@@ -22,10 +23,10 @@ router.post(
     postController.createPost
 );
 
-// get all posts
+// get all user posts and friends posts
 router.get('/posts', postController.getPosts);
 
-// get specific post
+// get specific user/friend post
 router.get('/posts/:postid', postController.getPost);
 
 // update specific post 
@@ -70,7 +71,7 @@ router.delete(
 // USER
 
 // signup user
-// router.post('/signup', userController.signup); 
+router.post('/signup', userController.signup); 
 
 // login user
 router.post('/login', userController.login);

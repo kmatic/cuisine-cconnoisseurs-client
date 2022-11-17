@@ -7,7 +7,7 @@ const compression = require('compression');
 const helmet = require('helmet');
 const cors = require('cors');
 
-require('./mongo.js');
+require('./config/mongo.js');
 
 const indexRouter = require('./routes/index');
 const apiRouter = require('./routes/api');
