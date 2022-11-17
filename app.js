@@ -8,6 +8,7 @@ const helmet = require('helmet');
 const cors = require('cors');
 
 require('./config/mongo.js');
+require('./config/passport.js');
 
 const indexRouter = require('./routes/index');
 const apiRouter = require('./routes/api');
@@ -39,7 +40,7 @@ app.use(function(err, req, res, next) {
 
   // render the error page
   res.status(err.status || 500);
-  res.render('error');
+  res.json('error');
 });
 
 module.exports = app;
