@@ -78,15 +78,3 @@ exports.logout = (req, res, next) => {
         res.redirect('/api');
     })
 }
-
-exports.getUsers = async (req, res, next) => {
-    try {
-        const users = await User.find().sort({ created: 1 }).exec();
-        if (!users) {
-            return res.status(400).json({ error: 'Users not found'});
-        }
-        res.status(200).json({ users });
-    } catch (err) {
-        return next(err);
-    }
-}

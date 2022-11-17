@@ -6,6 +6,7 @@ const passport = require('passport');
 const commentController = require('../controllers/commentController');
 const postController = require('../controllers/postController');
 const userController = require('../controllers/userController');
+const profileController = require('../controllers/profileController')
 
 // get / redirect to /posts
 router.get('/', (req, res) => {
@@ -68,10 +69,7 @@ router.delete(
     commentController.deleteComment
 );
 
-// USER
-
-// get all users
-router.get('/users', userController.getUsers)
+// USER AUTH STUFF
 
 // signup user
 router.post('/signup', userController.signup); 
@@ -81,5 +79,19 @@ router.post('/login', userController.login);
 
 // logout user
 router.post('/logout', userController.logout);
+
+// USER PROFILE STUFF
+
+// get all users
+router.get('/users', profileController.getUsers)
+
+// get user profile
+router.get('/profile/:profileid', profileController.getProfile)
+
+// // get all of current users requests
+// router.get('/requests', userController.getRequests);
+
+// // get all of current users friends
+// router.get('/')
 
 module.exports = router;
