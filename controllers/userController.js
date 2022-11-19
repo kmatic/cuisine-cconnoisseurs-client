@@ -67,7 +67,13 @@ exports.login = (req, res, next) => {
         req.login(user, { session: false }, (err) => {
             if (err) return next(err);
             const token = jwt.sign({user}, process.env.SECRET_KEY, { expiresIn: '1d' });
-            return res.status(200).json({ token });
+            const { _id, username, posts, friends, requests, created } = user;
+            return res.status(200).json({ 
+                token: token,
+                user: {
+                    _id, username, posts, friends, requests, created,
+                }  
+            });
         });
     })(req, res, next);
 }
