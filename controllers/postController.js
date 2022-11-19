@@ -3,9 +3,9 @@ const { body, validationResult } = require('express-validator');
 
 // create post logic
 exports.createPost = [
-    body('title', 'Title required').trim().isLength({ min: 1 }).escape(),
-    body('text', 'Text required').trim().isLength({ min: 1 }).escape(),
-    body('author', 'Author required').trim().isLength({ min: 1 }).escape(),
+    body('restaurant', 'Restaurant required').trim().isLength({ min: 1 }).escape(),
+    body('rating', 'Maximum of 5 stars').isFloat({ min: 0, max: 5}).escape(),
+    body('description', 'yeet').optional().escape(),
     (req, res, next) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
@@ -15,9 +15,10 @@ exports.createPost = [
             });
         }
         const post = new Post({
-            title: req.body.title,
-            text: req.body.text,
-            author: req.body.author,
+            restaurant: req.body.restaurant,
+            rating: req.body.rating,
+            description: req.body.description,
+            user: req.body.user,
         });
         post.save((err) => {
             if (err) return next(err);
@@ -54,9 +55,9 @@ exports.getPost = async (req, res, next) => {
 
 // update post logic
 exports.updatePost = [
-    body('title', 'Title required').trim().isLength({ min: 1 }).escape(),
-    body('text', 'Text required').trim().isLength({ min: 1 }).escape(),
-    body('author', 'Author required').trim().isLength({ min: 1 }).escape(),
+    body('restaurant', 'Restaurant required').trim().isLength({ min: 1 }).escape(),
+    body('rating', 'Maximum of 5 stars').isFloat({ min: 0, max: 5}).escape(),
+    body('description', 'yeet').optional().escape(),
     async (req, res, next) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
@@ -66,9 +67,10 @@ exports.updatePost = [
             });
         }
         const post = new Post({
-            title: req.body.title,
-            text: req.body.text,
-            author: req.body.author,
+            restaurant: req.body.restaurant,
+            rating: req.body.rating,
+            description: req.body.description,
+            user: req.body.user,
             _id: req.params.postid
         });
         try {
