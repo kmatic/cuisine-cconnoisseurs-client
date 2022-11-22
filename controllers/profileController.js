@@ -39,14 +39,36 @@ exports.follow = async (req, res, next) => {
     }
 }
 
-exports.updateUser= async (req, res, next) => {
-    try {
-        const updatedUser = await User.findByIdAndUpdate(req.params.profileid, {
-            city: req.body.city,
-            bio: req.body.bio
-        }, {new: true}).exec()
-        res.status(200).json({ updatedUser });
-    } catch (err) {
-        return next(err);
+// exports.updateUser= async (req, res, next) => {
+//     try {
+//         const updatedUser = await User.findByIdAndUpdate(req.params.profileid, {
+//             city: req.body.city,
+//             bio: req.body.bio
+//         }, {new: true}).exec()
+//         res.status(200).json({ updatedUser });
+//     } catch (err) {
+//         return next(err);
+//     }
+// }
+
+exports.updateUser = [
+    body('city', 'City required').escape().optional(),
+    body('bio', 'Message required').escape().optional(),
+    async (req, res, next) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({
+                errors: errors.array(),
+            });
+        }
+        try {
+            const updatedUser = await User.findByIdAndUpdate(req.params.profileid, {
+                city: req.body.city,
+                bio: req.body.bio
+            }, {new: true}).exec()
+            res.status(200).json({ updatedUser });
+        } catch (err) {
+            return next(err);
+        }
     }
-}
+]
