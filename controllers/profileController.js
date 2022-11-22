@@ -3,7 +3,7 @@ const { body, validationResult } = require('express-validator');
 
 exports.getUsers = async (req, res, next) => {
     try {
-        const users = await User.find().select('_id username').sort({ created: 1 }).exec();
+        const users = await User.find().select('-password').sort({ created: 1 }).exec();
         if (!users) {
             return res.status(400).json({ error: 'Users not found'});
         }
@@ -15,7 +15,7 @@ exports.getUsers = async (req, res, next) => {
 
 exports.getProfile = async (req, res, next) => {
     try {
-        const profile = await User.findById(req.params.profileid).select('_id username posts friends requests created bio city').exec();
+        const profile = await User.findById(req.params.profileid).select('-password').exec();
         if (!profile) {
             return res.status(400).json({ error: 'User not found' });
         }
@@ -27,29 +27,17 @@ exports.getProfile = async (req, res, next) => {
 
 exports.follow = async (req, res, next) => {
     try {
-        const newFollower = await User.updateOne({ _id: req.params.profileid }, {$set: {
+        const updatedFollowedUser = await User.findByIdAndUpdate(req.params.profileid, {
             followers: req.body.followers,
-        }})
-        const newFollowing = await User.updateOne({ _id: req.body.user }, {$set: {
-            following: req.body.user.following,
-        }})
-        res.status(200).json({ newFollowing });
+        }).exec();
+        const updatedCurrentUser = await User.findByIdAndUpdate(req.body.user, {
+            following: req.body.following,
+        }, {new: true}).select('-password').exec();
+        res.status(200).json({ user: updatedCurrentUser });
     } catch (err) {
         return next(err);
     }
 }
-
-// exports.updateUser= async (req, res, next) => {
-//     try {
-//         const updatedUser = await User.findByIdAndUpdate(req.params.profileid, {
-//             city: req.body.city,
-//             bio: req.body.bio
-//         }, {new: true}).exec()
-//         res.status(200).json({ updatedUser });
-//     } catch (err) {
-//         return next(err);
-//     }
-// }
 
 exports.updateUser = [
     body('city', 'City required').escape().optional(),
@@ -65,7 +53,7 @@ exports.updateUser = [
             const updatedUser = await User.findByIdAndUpdate(req.params.profileid, {
                 city: req.body.city,
                 bio: req.body.bio
-            }, {new: true}).exec()
+            }, {new: true}).select('-password').exec()
             res.status(200).json({ updatedUser });
         } catch (err) {
             return next(err);
