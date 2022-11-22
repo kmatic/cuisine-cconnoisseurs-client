@@ -15,7 +15,7 @@ exports.getUsers = async (req, res, next) => {
 
 exports.getProfile = async (req, res, next) => {
     try {
-        const profile = await User.findById(req.params.profileid).select('_id username posts friends requests created').exec();
+        const profile = await User.findById(req.params.profileid).select('_id username posts friends requests created bio city').exec();
         if (!profile) {
             return res.status(400).json({ error: 'User not found' });
         }
@@ -41,10 +41,10 @@ exports.follow = async (req, res, next) => {
 
 exports.updateUser= async (req, res, next) => {
     try {
-        const updatedUser = await User.updateOne({ _id: req.params.profileid }, {$set: {
+        const updatedUser = await User.findByIdAndUpdate(req.params.profileid, {
             city: req.body.city,
             bio: req.body.bio
-        }})
+        }, {new: true}).exec()
         res.status(200).json({ updatedUser });
     } catch (err) {
         return next(err);
