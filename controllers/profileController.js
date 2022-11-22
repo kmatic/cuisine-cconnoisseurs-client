@@ -15,7 +15,7 @@ exports.getUsers = async (req, res, next) => {
 
 exports.getProfile = async (req, res, next) => {
     try {
-        const profile = await User.findById(req.params.profileid).select('-password').exec();
+        const profile = await User.findById(req.params.profileid).select('-password').populate('followers', '_id username').exec();
         if (!profile) {
             return res.status(400).json({ error: 'User not found' });
         }
