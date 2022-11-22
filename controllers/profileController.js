@@ -25,8 +25,16 @@ exports.getProfile = async (req, res, next) => {
     }
 }
 
-// exports.follow = async (req, res, next) => {
-//     try {
-//         const profile = await
-//     }
-// }
+exports.follow = async (req, res, next) => {
+    try {
+        const newFollower = await User.updateOne({ _id: req.params.profileid }, {$set: {
+            followers: req.body.followers,
+        }})
+        const newFollowing = await User.updateOne({ _id: req.body.user }, {$set: {
+            following: req.body.user.following,
+        }})
+        res.status(200).json({ newFollowing });
+    } catch (err) {
+        return next(err);
+    }
+}
