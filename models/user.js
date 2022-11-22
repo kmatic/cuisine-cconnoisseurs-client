@@ -7,6 +7,8 @@ const userSchema = new Schema({
     posts: [{ type: Schema.Types.ObjectId, ref: 'Post' }],
     following: [{ type: Schema.Types.ObjectId, ref: 'User' }],
     followers: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+    city: { type: String }, 
+    bio: { type: String },
     created: { type: Date, default: Date.now }
 });
 

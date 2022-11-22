@@ -24,3 +24,9 @@ exports.getProfile = async (req, res, next) => {
         return next(err);
     }
 }
+
+// exports.follow = async (req, res, next) => {
+//     try {
+//         const profile = await
+//     }
+// }

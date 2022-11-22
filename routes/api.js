@@ -88,6 +88,9 @@ router.get('/users', profileController.getUsers)
 // get user profile
 router.get('/profile/:profileid', profileController.getProfile)
 
+// follow user profile
+// router.post('/profile/:profileid/follow', profileController.follow)
+
 // // get all of current users requests
 // router.get('/requests', userController.getRequests);
 
