@@ -38,3 +38,15 @@ exports.follow = async (req, res, next) => {
         return next(err);
     }
 }
+
+exports.updateUser= async (req, res, next) => {
+    try {
+        const updatedUser = await User.updateOne({ _id: req.params.profileid }, {$set: {
+            city: req.body.city,
+            bio: req.body.bio
+        }})
+        res.status(200).json({ updatedUser });
+    } catch (err) {
+        return next(err);
+    }
+}

@@ -88,6 +88,9 @@ router.get('/users', profileController.getUsers)
 // get user profile
 router.get('/profile/:profileid', profileController.getProfile)
 
+// update user profile
+router.patch('/profile/:profileid', profileController.updateUser)
+
 // follow user profile
 router.patch('/profile/:profileid/follow', profileController.follow)
 
