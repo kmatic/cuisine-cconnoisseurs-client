@@ -30,7 +30,7 @@ exports.createPost = [
 // get posts logic
 exports.getPosts = async (req, res, next) => {
     try {
-        const posts = await Post.find().sort({ timestamp: -1 }).exec();
+        const posts = await Post.find().sort({ timestamp: -1 }).populate('user', '_id username').exec();
         if (!posts) {
             return res.status(400).json({ error: 'Posts not found' });
         }
@@ -93,6 +93,17 @@ exports.deletePost = async (req, res, next) => {
             return res.status(400).json({ error: 'Error deleting post' });
         }
         res.status(200).json({ msg: 'Post deleted', deletedPost });
+    } catch (err) {
+        return next(err);
+    }
+}
+
+exports.likePost = async (req, res, next) => {
+    try {
+        const updatedPost = await Post.findByIdAndUpdate(req.params.postid, {
+            likes: req.body.likes,
+        }).populate('user', '_id username').exec()
+        res.status(200).json({ post: updatedPost })
     } catch (err) {
         return next(err);
     }

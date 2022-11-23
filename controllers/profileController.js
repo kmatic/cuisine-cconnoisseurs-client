@@ -25,20 +25,6 @@ exports.getProfile = async (req, res, next) => {
     }
 }
 
-exports.follow = async (req, res, next) => {
-    try {
-        const updatedFollowedUser = await User.findByIdAndUpdate(req.params.profileid, {
-            followers: req.body.followers,
-        }).exec();
-        const updatedCurrentUser = await User.findByIdAndUpdate(req.body.user, {
-            following: req.body.following,
-        }, {new: true}).select('-password').exec();
-        res.status(200).json({ user: updatedCurrentUser });
-    } catch (err) {
-        return next(err);
-    }
-}
-
 exports.updateUser = [
     body('city', 'City required').escape().optional(),
     body('bio', 'Message required').escape().optional(),
@@ -60,3 +46,31 @@ exports.updateUser = [
         }
     }
 ]
+
+exports.follow = async (req, res, next) => {
+    try {
+        const updatedFollowedUser = await User.findByIdAndUpdate(req.params.profileid, {
+            followers: req.body.followers,
+        }).exec();
+        const updatedCurrentUser = await User.findByIdAndUpdate(req.body.user, {
+            following: req.body.following,
+        }, {new: true}).select('-password').exec();
+        res.status(200).json({ user: updatedCurrentUser });
+    } catch (err) {
+        return next(err);
+    }
+}
+
+exports.unfollow = async (req, res, next) => { // exact as follow controller. This will be removed when refactored
+    try {
+        const updatedFollowedUser = await User.findByIdAndUpdate(req.params.profileid, {
+            followers: req.body.followers,
+        }).exec();
+        const updatedCurrentUser = await User.findByIdAndUpdate(req.body.user, {
+            following: req.body.following,
+        }, {new: true}).select('-password').exec();
+        res.status(200).json({ user: updatedCurrentUser });
+    } catch (err) {
+        return next(err);
+    }
+}

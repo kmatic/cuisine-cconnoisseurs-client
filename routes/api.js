@@ -24,7 +24,7 @@ router.post(
     postController.createPost
 );
 
-// get all user posts and friends posts
+// get all posts
 router.get('/posts', postController.getPosts);
 
 // get specific user/friend post
@@ -43,6 +43,13 @@ router.delete(
     passport.authenticate('jwt', {session: false}),
     postController.deletePost
 );
+
+// like a post
+router.patch(
+    '/posts/:postid/like',
+    passport.authenticate('jwt', {session: false}),
+    postController.likePost
+)
 
 // COMMENTS
 
@@ -94,10 +101,7 @@ router.patch('/profile/:profileid', profileController.updateUser)
 // follow user profile
 router.patch('/profile/:profileid/follow', profileController.follow)
 
-// // get all of current users requests
-// router.get('/requests', userController.getRequests);
-
-// // get all of current users friends
-// router.get('/')
+// unfollow user profile
+router.patch('/profile/:profileid/unfollow', profileController.unfollow);
 
 module.exports = router;
