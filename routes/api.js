@@ -54,7 +54,11 @@ router.patch(
 // COMMENTS
 
 // create a comment on a post
-router.post('/posts/:postid/comments', commentController.createComment);
+router.post(
+    '/posts/:postid/comments',
+    passport.authenticate('jwt', {session: false}),
+    commentController.createComment
+);
 
 // get all comments on a post
 router.get('/posts/:postid/comments', commentController.getComments);

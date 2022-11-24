@@ -102,7 +102,7 @@ exports.likePost = async (req, res, next) => {
     try {
         const updatedPost = await Post.findByIdAndUpdate(req.params.postid, {
             likes: req.body.likes,
-        }).populate('user', '_id username').exec()
+        }, {new: true}).populate('user', '_id username').exec()
         res.status(200).json({ post: updatedPost })
     } catch (err) {
         return next(err);
