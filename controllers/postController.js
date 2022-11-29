@@ -5,7 +5,7 @@ const { body, validationResult } = require('express-validator');
 exports.createPost = [
     body('restaurant', 'Restaurant required').trim().isLength({ min: 1 }).escape(),
     body('rating', 'Maximum of 5 stars').isFloat({ min: 0, max: 5}).escape(),
-    body('description', 'yeet').optional().escape(),
+    // body('description', 'yeet').optional().escape(),
     (req, res, next) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
@@ -41,17 +41,17 @@ exports.getPosts = async (req, res, next) => {
 }
 
 // get post logic
-exports.getPost = async (req, res, next) => {
-    try {
-        const post = await Post.findById(req.params.postid).exec();
-        if (!post) {
-            return res.status(400).json({ error: 'Post not found' });
-        }
-        res.status(200).json({ post });
-    } catch (err) {
-        return next(err);
-    }
-}
+// exports.getPost = async (req, res, next) => {
+//     try {
+//         const post = await Post.findById(req.params.postid).exec();
+//         if (!post) {
+//             return res.status(400).json({ error: 'Post not found' });
+//         }
+//         res.status(200).json({ post });
+//     } catch (err) {
+//         return next(err);
+//     }
+// }
 
 // update post logic
 exports.updatePost = [
@@ -104,6 +104,18 @@ exports.likePost = async (req, res, next) => {
             likes: req.body.likes,
         }, {new: true}).populate('user', '_id username').exec()
         res.status(200).json({ post: updatedPost })
+    } catch (err) {
+        return next(err);
+    }
+}
+
+exports.getProfilePosts = async (req, res, next) => {
+    try {
+        const posts = await Post.find({ user: req.params.profileid }).sort({ timestamp: -1 }).exec();
+        if (!posts) {
+            return res.status(400).json({ error: 'Posts not found' });
+        }
+        res.status(200).json({ posts });
     } catch (err) {
         return next(err);
     }

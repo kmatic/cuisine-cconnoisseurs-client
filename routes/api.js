@@ -27,8 +27,8 @@ router.post(
 // get all posts
 router.get('/posts', postController.getPosts);
 
-// get specific user/friend post
-router.get('/posts/:postid', postController.getPost);
+// get specific  post
+// router.get('/posts/:postid', postController.getPost);
 
 // update specific post 
 router.put(
@@ -50,6 +50,9 @@ router.patch(
     passport.authenticate('jwt', {session: false}),
     postController.likePost
 )
+
+// get users posts for their profile
+router.get('/posts/profile/:profileid', postController.getProfilePosts);
 
 // COMMENTS
 

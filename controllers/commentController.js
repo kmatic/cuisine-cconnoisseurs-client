@@ -23,7 +23,8 @@ exports.createComment = [
             if (!post) {
                 return res.status(400).json({ error: 'Cannot comment on non-existing post' });
             }
-            await comment.save();
+            await comment.save()
+            await comment.populate('user', '_id username')
             res.status(200).json({ msg: 'comment posted', comment });
         } catch (err) {
             return next(err);
@@ -92,7 +93,7 @@ exports.deleteComment = async (req, res, next) => {
     try {
         const deletedComment = await Comment.findByIdAndDelete(req.params.commentid).exec();
         if (!deletedComment) {
-            return res.status(400).json({ error: 'Erroor deleting comment' });
+            return res.status(400).json({ error: 'Error deleting comment' });
         }
         res.status(200).json({ msg: 'Comment deleted', deletedComment });
     } catch (err) {
