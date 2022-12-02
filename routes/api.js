@@ -24,7 +24,7 @@ router.post(
     postController.createPost
 );
 
-// get all posts
+// get all user and followed user posts
 router.get('/posts', postController.getPosts);
 
 // get specific  post

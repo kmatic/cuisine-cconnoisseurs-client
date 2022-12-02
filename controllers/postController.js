@@ -34,7 +34,10 @@ exports.getPosts = async (req, res, next) => {
         if (!posts) {
             return res.status(400).json({ error: 'Posts not found' });
         }
-        res.status(200).json({ posts });
+        const filteredPosts = posts.filter((post) => {
+            return post.user.followers.includes(req.body.id) || post.user._id == req.body.id
+        })
+        res.status(200).json({ posts: filteredPosts });
     } catch (err) {
         return next(err);
     }
