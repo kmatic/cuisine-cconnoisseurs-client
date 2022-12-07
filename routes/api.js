@@ -25,7 +25,7 @@ router.post(
 );
 
 // get all user and followed user posts
-router.get('/posts', postController.getPosts);
+router.get('/posts/:profileid', postController.getPosts);
 
 // get specific  post
 // router.get('/posts/:postid', postController.getPost);

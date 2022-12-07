@@ -30,14 +30,15 @@ exports.createPost = [
 // get posts logic
 exports.getPosts = async (req, res, next) => {
     try {
-        const posts = await Post.find().sort({ timestamp: -1 }).populate('user', '_id username').exec();
+        const posts = await Post.find().sort({ timestamp: -1 }).populate('user', '_id username followers').exec();
+        console.log(posts)
         if (!posts) {
             return res.status(400).json({ error: 'Posts not found' });
         }
         const filteredPosts = posts.filter((post) => {
-            return post.user.followers.includes(req.body.id) || post.user._id == req.body.id
+            return post.user.followers.includes(req.params.profileid) || post.user._id == req.params.profileid
         })
-        res.status(200).json({ posts: filteredPosts });
+        res.status(200).json({ data: filteredPosts });
     } catch (err) {
         return next(err);
     }
@@ -118,7 +119,7 @@ exports.getProfilePosts = async (req, res, next) => {
         if (!posts) {
             return res.status(400).json({ error: 'Posts not found' });
         }
-        res.status(200).json({ posts });
+        res.status(200).json({ data: posts });
     } catch (err) {
         return next(err);
     }

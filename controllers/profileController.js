@@ -7,7 +7,7 @@ exports.getUsers = async (req, res, next) => {
         if (!users) {
             return res.status(400).json({ error: 'Users not found'});
         }
-        res.status(200).json({ users });
+        res.status(200).json({ data: users });
     } catch (err) {
         return next(err);
     }
@@ -19,7 +19,7 @@ exports.getProfile = async (req, res, next) => {
         if (!profile) {
             return res.status(400).json({ error: 'User not found' });
         }
-        res.status(200).json({ profile });
+        res.status(200).json({ data: profile });
     } catch (err) {
         return next(err);
     }
@@ -39,7 +39,7 @@ exports.updateUser = [
             const updatedUser = await User.findByIdAndUpdate(req.params.profileid, {
                 city: req.body.city,
                 bio: req.body.bio
-            }, {new: true}).select('-password').exec()
+            }, {new: true}).select('-password').populate('followers', '_id username').exec()
             res.status(200).json({ updatedUser });
         } catch (err) {
             return next(err);

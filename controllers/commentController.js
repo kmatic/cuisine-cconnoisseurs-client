@@ -39,7 +39,7 @@ exports.getComments = async (req, res, next) => {
         if (!comments) {
             return res.status(400).json({ error: 'Comments not found' });
         }
-        res.status(200).json({ comments });
+        res.status(200).json({ data: comments });
     } catch (err) {
         return next(err);
     }
