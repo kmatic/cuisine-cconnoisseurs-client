@@ -9,7 +9,8 @@ const userSchema = new Schema({
     followers: [{ type: Schema.Types.ObjectId, ref: 'User' }],
     city: { type: String }, 
     bio: { type: String },
-    created: { type: Date, default: Date.now }
+    created: { type: Date, default: Date.now },
+    profileImage: { type: String },
 });
 
 module.exports = mongoose.model('User', userSchema);
