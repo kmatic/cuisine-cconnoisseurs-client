@@ -1,20 +1,9 @@
 const User = require('../models/user');
 const { body, validationResult } = require('express-validator');
-const { S3Client, PutObjectCommand, GetObjectCommand} = require('@aws-sdk/client-s3');
 const sharp = require('sharp');
+const s3 = require('../config/s3');
+const { PutObjectCommand, GetObjectCommand} = require('@aws-sdk/client-s3');
 const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
-
-require('dotenv').config();
-
-// create s3 object
-const s3 = new S3Client({
-    credentials: {
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-        secretAccessKey: process.env.AWS_ACCESS_KEY_SECRET,
-    },
-    region: process.env.AWS_BUCKET_REGION
-});
-
 
 exports.getUsers = async (req, res, next) => {
     try {
