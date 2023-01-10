@@ -16,19 +16,36 @@ exports.createComment = [
                 data: req.body,
             });
         }
-        const comment = new Comment({
-            text: req.body.text,
-            user: req.body.user,
-            post: req.params.postid,
-        });
+        
         try {
             const post = await Post.findById(req.params.postid).exec();
             if (!post) {
                 return res.status(400).json({ error: 'Cannot comment on non-existing post' });
             }
-            await comment.save()
-            await comment.populate('user', '_id username')
-            res.status(200).json({ msg: 'comment posted', comment });
+
+            const comment = await Comment.create({
+                text: req.body.text,
+                user: req.body.user,
+                post: req.params.postid,
+            });
+
+            await comment.populate('user', '_id username profileImage');
+            const leanComment = comment.toObject(); // convert mongoose object to js object to modify properties
+
+            let imageUrl = false;
+            if (leanComment.user.profileImage === true) {
+                imageUrl = await getSignedUrl(
+                    s3,
+                    new GetObjectCommand({
+                        Bucket: process.env.AWS_BUCKET_NAME,
+                        Key: comment.user._id.toString(),
+                    }),
+                    { expiresIn: 60 } // 60s
+                )
+            }
+            leanComment.user.imageUrl = imageUrl;
+
+            res.status(200).json({ msg: 'comment posted', comment: leanComment });
         } catch (err) {
             return next(err);
         }
