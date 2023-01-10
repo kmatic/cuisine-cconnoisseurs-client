@@ -116,6 +116,7 @@ router.patch('/profile/:profileid/unfollow', profileController.unfollow);
 // update user profile picture
 router.post(
     '/profile/:profileid/image',
+    passport.authenticate('jwt', {session: false}),
     upload.single('image'),
     profileController.uploadProfilePicture
 );

@@ -1,7 +1,8 @@
 const User = require('../models/user');
 const { body, validationResult } = require('express-validator');
-const { S3Client, PutObjectCommand} = require('@aws-sdk/client-s3');
+const { S3Client, PutObjectCommand, GetObjectCommand} = require('@aws-sdk/client-s3');
 const sharp = require('sharp');
+const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
 
 require('dotenv').config();
 
@@ -91,17 +92,29 @@ exports.unfollow = async (req, res, next) => { // exact as follow controller. Th
 
 exports.uploadProfilePicture = async (req, res, next) => {    
     const file = req.file
+    const id = req.params.profileid // by making the key the profileid, when user uploads new profile picture, it automatically overwrites existing one
+    
+    console.log(id)
 
     const fileBuffer = await sharp(file.buffer).resize({ height: 180, width: 180, fit: 'contain' }).toBuffer();
 
     const params = {
         Bucket: process.env.AWS_BUCKET_NAME,
-        Key: file.originalname,
+        Key: id,
         Body: fileBuffer,
         ContentType: file.mimetype,
     };
 
     await s3.send(new PutObjectCommand(params));
+
+    const profileUrl = await getSignedUrl(
+        s3,
+        new GetObjectCommand({
+            Bucket: process.env.AWS_BUCKET_NAME,
+            Key: id,
+        }),
+        { expiresIn: 60} // 60 seconds
+    );
     
-    console.log('success');
+    res.status(200).json({ profileUrl });
 }
