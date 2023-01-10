@@ -30,10 +30,25 @@ exports.getUsers = async (req, res, next) => {
 
 exports.getProfile = async (req, res, next) => {
     try {
-        const profile = await User.findById(req.params.profileid).select('-password').populate('followers', '_id username').exec();
+        const profile = await User.findById(req.params.profileid).select('-password').populate('followers', '_id username').lean().exec();
         if (!profile) {
             return res.status(400).json({ error: 'User not found' });
         }
+
+        let imageUrl = false;
+        // retrieve signed url for profile pic from s3 bucket if picture exists
+        if (profile.profileImage === true) {
+            imageUrl = await getSignedUrl(
+                s3,
+                new GetObjectCommand({
+                    Bucket: process.env.AWS_BUCKET_NAME,
+                    Key: req.params.profileid,
+                }),
+                { expiresIn: 60} // 60 seconds
+            );
+        }
+        
+        profile.imageUrl = imageUrl;
         res.status(200).json({ data: profile });
     } catch (err) {
         return next(err);
@@ -93,21 +108,20 @@ exports.unfollow = async (req, res, next) => { // exact as follow controller. Th
 exports.uploadProfilePicture = async (req, res, next) => {    
     const file = req.file
     const id = req.params.profileid // by making the key the profileid, when user uploads new profile picture, it automatically overwrites existing one
-    
-    console.log(id)
-
     const fileBuffer = await sharp(file.buffer).resize({ height: 180, width: 180, fit: 'contain' }).toBuffer();
 
-    const params = {
+    await s3.send(new PutObjectCommand({
         Bucket: process.env.AWS_BUCKET_NAME,
         Key: id,
         Body: fileBuffer,
         ContentType: file.mimetype,
-    };
+    }));
 
-    await s3.send(new PutObjectCommand(params));
+    await User.findByIdAndUpdate(id, { // update profile to set picture boolean property to true
+        profileImage: true
+    });
 
-    const profileUrl = await getSignedUrl(
+    const imageUrl = await getSignedUrl(
         s3,
         new GetObjectCommand({
             Bucket: process.env.AWS_BUCKET_NAME,
@@ -116,5 +130,5 @@ exports.uploadProfilePicture = async (req, res, next) => {
         { expiresIn: 60} // 60 seconds
     );
     
-    res.status(200).json({ profileUrl });
+    res.status(200).json({ imageUrl });
 }

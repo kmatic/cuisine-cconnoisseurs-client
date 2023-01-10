@@ -10,7 +10,7 @@ const userSchema = new Schema({
     city: { type: String }, 
     bio: { type: String },
     created: { type: Date, default: Date.now },
-    profileImage: { type: String },
+    profileImage: { type: Boolean, default: false },
 });
 
 module.exports = mongoose.model('User', userSchema);
