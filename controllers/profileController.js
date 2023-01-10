@@ -46,7 +46,7 @@ exports.getUsers = async (req, res, next) => {
 
 exports.getProfile = async (req, res, next) => {
     try {
-        const profile = await User.findById(req.params.profileid).select('-password').populate('followers', '_id username').lean().exec();
+        const profile = await User.findById(req.params.profileid).select('-password').populate('followers', '_id username profileImage').lean().exec();
         if (!profile) {
             return res.status(400).json({ error: 'User not found' });
         }
@@ -63,8 +63,25 @@ exports.getProfile = async (req, res, next) => {
                 { expiresIn: 60} // 60 seconds
             );
         }
-        
+
         profile.imageUrl = imageUrl;
+
+        // retrieve profile picture signed urls of followers 
+        for (let follower of profile.followers) {
+            imageUrl = false;
+            if (follower.profileImage === true) {
+                imageUrl = await getSignedUrl(
+                    s3,
+                    new GetObjectCommand({
+                        Bucket: process.env.AWS_BUCKET_NAME,
+                        Key: follower._id.toString(),
+                    }),
+                    { expiresIn: 60 } // 60 seconds
+                );
+            };
+            follower.imageUrl = imageUrl;
+        }
+        
         res.status(200).json({ data: profile });
     } catch (err) {
         return next(err);
