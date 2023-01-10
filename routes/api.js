@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const passport = require('passport');
+const multer = require('multer');
 
 // import controllers
 const commentController = require('../controllers/commentController');
@@ -8,15 +9,16 @@ const postController = require('../controllers/postController');
 const userController = require('../controllers/userController');
 const profileController = require('../controllers/profileController')
 
+// multer setup 
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
+
 // get / redirect to /posts
 router.get('/', (req, res) => {
     res.redirect('/api/posts');
 });
 
-// Map to CRUD 
-
 //POSTS
-
 // create a post
 router.post(
     '/posts',
@@ -110,5 +112,12 @@ router.patch('/profile/:profileid/follow', profileController.follow)
 
 // unfollow user profile
 router.patch('/profile/:profileid/unfollow', profileController.unfollow);
+
+// update user profile picture
+router.post(
+    '/profile/:profileid/image',
+    upload.single('image'),
+    profileController.uploadProfilePicture
+);
 
 module.exports = router;

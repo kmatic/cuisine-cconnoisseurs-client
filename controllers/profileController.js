@@ -1,5 +1,19 @@
 const User = require('../models/user');
 const { body, validationResult } = require('express-validator');
+const { S3Client, PutObjectCommand} = require('@aws-sdk/client-s3');
+const sharp = require('sharp');
+
+require('dotenv').config();
+
+// create s3 object
+const s3 = new S3Client({
+    credentials: {
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.AWS_ACCESS_KEY_SECRET,
+    },
+    region: process.env.AWS_BUCKET_REGION
+});
+
 
 exports.getUsers = async (req, res, next) => {
     try {
@@ -73,4 +87,21 @@ exports.unfollow = async (req, res, next) => { // exact as follow controller. Th
     } catch (err) {
         return next(err);
     }
+}
+
+exports.uploadProfilePicture = async (req, res, next) => {    
+    const file = req.file
+
+    const fileBuffer = await sharp(file.buffer).resize({ height: 180, width: 180, fit: 'contain' }).toBuffer();
+
+    const params = {
+        Bucket: process.env.AWS_BUCKET_NAME,
+        Key: file.originalname,
+        Body: fileBuffer,
+        ContentType: file.mimetype,
+    };
+
+    await s3.send(new PutObjectCommand(params));
+    
+    console.log('success');
 }

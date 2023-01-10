@@ -6,11 +6,7 @@ const logger = require('morgan');
 const compression = require('compression');
 const helmet = require('helmet');
 const cors = require('cors');
-
 const multer = require('multer');
-
-const storage = multer.memoryStorage()
-const upload = multer({ storage: storage })
 
 require('./config/mongo.js');
 require('./config/passport.js');
