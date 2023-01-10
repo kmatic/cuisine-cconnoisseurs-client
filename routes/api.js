@@ -33,11 +33,11 @@ router.get('/posts/:profileid', postController.getPosts);
 // router.get('/posts/:postid', postController.getPost);
 
 // update specific post 
-router.put(
-    '/posts/:postid',
-    passport.authenticate('jwt', {session: false}),
-    postController.updatePost
-);
+// router.put(
+//     '/posts/:postid',
+//     passport.authenticate('jwt', {session: false}),
+//     postController.updatePost
+// );
 
 // delete specific post
 router.delete(
@@ -69,14 +69,14 @@ router.post(
 router.get('/posts/:postid/comments', commentController.getComments);
 
 // get a specific comment on a post
-router.get('/posts/:postid/comments/:commentid', commentController.getComment);
+// router.get('/posts/:postid/comments/:commentid', commentController.getComment);
 
 // update a comment 
-router.put(
-    '/posts/:postid/comments/:commentid',
-    passport.authenticate('jwt', {session: false}),
-    commentController.updateComment
-);
+// router.put(
+//     '/posts/:postid/comments/:commentid',
+//     passport.authenticate('jwt', {session: false}),
+//     commentController.updateComment
+// );
 
 // delete a comment
 router.delete(
