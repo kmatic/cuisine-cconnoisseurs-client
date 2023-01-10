@@ -18,10 +18,26 @@ const s3 = new S3Client({
 
 exports.getUsers = async (req, res, next) => {
     try {
-        const users = await User.find().select('-password').sort({ created: 1 }).exec();
+        const users = await User.find().select('-password').sort({ created: 1 }).lean().exec();
         if (!users) {
             return res.status(400).json({ error: 'Users not found'});
         }
+
+        for (let user of users) {
+            let imageUrl = false;
+            if (user.profileImage === true) {
+                imageUrl = await getSignedUrl(
+                    s3,
+                    new GetObjectCommand({
+                        Bucket: process.env.AWS_BUCKET_NAME,
+                        Key: user._id.toString(),
+                    }),
+                    { expiresIn: 60 } // 60 seconds
+                );
+            };
+            user.imageUrl = imageUrl;
+        }
+
         res.status(200).json({ data: users });
     } catch (err) {
         return next(err);
