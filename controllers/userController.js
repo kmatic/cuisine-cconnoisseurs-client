@@ -37,19 +37,19 @@ exports.signup = [
         if (!errors.isEmpty()) {
             return res.status(400).json({
                 username: req.body.username,
-                errors: errors.array(),
+                errors: errors.array()[0],
             })
         } 
         try {
             const hashedPassword = await bcrypt.hash(req.body.password, 10);
-            const user = new User({
+
+            await User.create({
                 username: req.body.username,
                 password: hashedPassword
             });
-            user.save((err) => {
-                if (err) return next(err);
-                res.status(200).json({ msg: 'Account created' })
-            });
+
+            res.status(200).json({ message: 'Account created' })
+
         } catch (err) {
             return next(err);
         }
@@ -60,8 +60,8 @@ exports.login = (req, res, next) => {
     passport.authenticate('local', { session: false }, (err, user, info) => {
         if (err || !user) {
             return res.status(400).json({
-                msg: 'There was an error',
-                user: user
+                user: user,
+                errors: info,
             });
         }
         req.login(user, { session: false }, (err) => {
@@ -72,7 +72,8 @@ exports.login = (req, res, next) => {
                 token: token,
                 user: {
                     _id, username, posts, following, followers, created,
-                }  
+                },
+                message: 'Login successful!'  
             });
         });
     })(req, res, next);
