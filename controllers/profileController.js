@@ -84,7 +84,7 @@ exports.updateUser = [
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({
-                errors: errors.array(),
+                errors: errors.array()[0],
             });
         }
         try {
@@ -92,7 +92,7 @@ exports.updateUser = [
                 city: req.body.city,
                 bio: req.body.bio
             }, {new: true}).select('-password').populate('followers', '_id username').exec()
-            res.status(200).json({ updatedUser });
+            res.status(200).json({ updatedUser, message: 'Bio changes saved!' });
         } catch (err) {
             return next(err);
         }
@@ -107,21 +107,7 @@ exports.follow = async (req, res, next) => {
         const updatedCurrentUser = await User.findByIdAndUpdate(req.body.user, {
             following: req.body.following,
         }, {new: true}).select('-password').exec();
-        res.status(200).json({ user: updatedCurrentUser });
-    } catch (err) {
-        return next(err);
-    }
-}
-
-exports.unfollow = async (req, res, next) => { // exact as follow controller. This will be removed when refactored
-    try {
-        const updatedFollowedUser = await User.findByIdAndUpdate(req.params.profileid, {
-            followers: req.body.followers,
-        }).exec();
-        const updatedCurrentUser = await User.findByIdAndUpdate(req.body.user, {
-            following: req.body.following,
-        }, {new: true}).select('-password').exec();
-        res.status(200).json({ user: updatedCurrentUser });
+        res.status(200).json({ currentUser: updatedCurrentUser, followedUser: updatedFollowedUser });
     } catch (err) {
         return next(err);
     }
@@ -152,5 +138,5 @@ exports.uploadProfilePicture = async (req, res, next) => {
         { expiresIn: 60} // 60 seconds
     );
     
-    res.status(200).json({ imageUrl });
+    res.status(200).json({ imageUrl, message: 'Profile picture saved!' });
 }

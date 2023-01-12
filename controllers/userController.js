@@ -49,7 +49,6 @@ exports.signup = [
             });
 
             res.status(200).json({ message: 'Account created' })
-
         } catch (err) {
             return next(err);
         }

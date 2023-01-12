@@ -107,11 +107,8 @@ router.get('/profile/:profileid', profileController.getProfile)
 // update user profile
 router.patch('/profile/:profileid', profileController.updateUser)
 
-// follow user profile
+// follow/unfollow user profile
 router.patch('/profile/:profileid/follow', profileController.follow)
-
-// unfollow user profile
-router.patch('/profile/:profileid/unfollow', profileController.unfollow);
 
 // update user profile picture
 router.post(
