@@ -4,6 +4,7 @@ const sharp = require('sharp');
 const s3 = require('../config/s3');
 const { PutObjectCommand, GetObjectCommand} = require('@aws-sdk/client-s3');
 const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
+const mongoose = require('mongoose');
 
 exports.getUsers = async (req, res, next) => {
     try {
@@ -35,7 +36,11 @@ exports.getUsers = async (req, res, next) => {
 
 exports.getProfile = async (req, res, next) => {
     try {
-        const profile = await User.findById(req.params.profileid).select('-password').populate('followers', '_id username profileImage').lean().exec();
+        const profile = await User.findById(req.params.profileid)
+            .select('-password')
+            .populate('followers', '_id username profileImage')
+            .lean()
+            .exec();
         if (!profile) {
             return res.status(400).json({ error: 'User not found' });
         }
@@ -101,13 +106,41 @@ exports.updateUser = [
 
 exports.follow = async (req, res, next) => {
     try {
-        const updatedFollowedUser = await User.findByIdAndUpdate(req.params.profileid, {
-            followers: req.body.followers,
-        }).exec();
-        const updatedCurrentUser = await User.findByIdAndUpdate(req.body.user, {
-            following: req.body.following,
-        }, {new: true}).select('-password').exec();
-        res.status(200).json({ currentUser: updatedCurrentUser, followedUser: updatedFollowedUser });
+        const followedUser = await User.findById(req.params.profileid).exec();
+        const currentUser = await User.findById(req.body.user).exec();
+
+        followedUser.followers = [...followedUser.followers, req.body.user];
+        currentUser.following = [...currentUser.following, req.params.profileid];
+
+        await followedUser.save();
+        await currentUser.save();
+
+        res.status(200).json({ currentUser });
+    } catch (err) {
+        return next(err);
+    }
+}
+
+exports.unfollow = async (req, res, next) => { 
+    try {
+        const unfollowedUser = await User.findById(req.params.profileid).exec();
+        const currentUser = await User.findById(req.body.user).exec();
+
+        const newFollowers = unfollowedUser.followers.filter((follower) => {
+            return follower.toString() !== req.body.user;
+        })
+
+        const newFollowing = currentUser.following.filter((user) => {
+            return user.toString() !== req.params.profileid
+        })
+
+        unfollowedUser.followers = newFollowers;
+        currentUser.following = newFollowing;
+
+        await unfollowedUser.save();
+        await currentUser.save();
+
+        res.status(200).json({ currentUser });
     } catch (err) {
         return next(err);
     }
