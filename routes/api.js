@@ -27,17 +27,10 @@ router.post(
 );
 
 // get all user and followed user posts
-router.get('/posts/:profileid', postController.getPosts);
-
-// get specific  post
-// router.get('/posts/:postid', postController.getPost);
-
-// update specific post 
-// router.put(
-//     '/posts/:postid',
-//     passport.authenticate('jwt', {session: false}),
-//     postController.updatePost
-// );
+router.get('/posts/:profileid', 
+    passport.authenticate('jwt', {session: false}),
+    postController.getPosts
+);
 
 // delete specific post
 router.delete(
@@ -54,7 +47,10 @@ router.patch(
 )
 
 // get users posts for their profile
-router.get('/posts/profile/:profileid', postController.getProfilePosts);
+router.get('/posts/profile/:profileid',
+    passport.authenticate('jwt', {session: false}),
+    postController.getProfilePosts
+);
 
 // COMMENTS
 
@@ -66,17 +62,10 @@ router.post(
 );
 
 // get all comments on a post
-router.get('/posts/:postid/comments', commentController.getComments);
-
-// get a specific comment on a post
-// router.get('/posts/:postid/comments/:commentid', commentController.getComment);
-
-// update a comment 
-// router.put(
-//     '/posts/:postid/comments/:commentid',
-//     passport.authenticate('jwt', {session: false}),
-//     commentController.updateComment
-// );
+router.get('/posts/:postid/comments', 
+    passport.authenticate('jwt', {session: false}),
+    commentController.getComments
+);
 
 // delete a comment
 router.delete(
@@ -99,19 +88,34 @@ router.post('/logout', userController.logout);
 // USER PROFILE STUFF
 
 // get all users
-router.get('/users', profileController.getUsers)
+router.get('/users',
+    passport.authenticate('jwt', {session: false}),
+    profileController.getUsers
+);
 
 // get user profile
-router.get('/profile/:profileid', profileController.getProfile)
+router.get('/profile/:profileid',
+    passport.authenticate('jwt', {session: false}), 
+    profileController.getProfile
+);
 
 // update user profile
-router.patch('/profile/:profileid', profileController.updateUser)
+router.patch('/profile/:profileid', 
+    passport.authenticate('jwt', {session: false}),
+    profileController.updateUser
+);
 
 // follow user profile
-router.patch('/profile/:profileid/follow', profileController.follow)
+router.patch('/profile/:profileid/follow',
+    passport.authenticate('jwt', {session: false}),
+    profileController.follow
+);
 
 // unfollow user profile
-router.patch('/profile/:profileid/unfollow', profileController.unfollow);
+router.patch('/profile/:profileid/unfollow',
+    passport.authenticate('jwt', {session: false}),
+    profileController.unfollow
+);
 
 // update user profile picture
 router.post(
