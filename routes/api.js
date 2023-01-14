@@ -22,13 +22,13 @@ router.get('/', (req, res) => {
 // create a post
 router.post(
     '/posts',
-    passport.authenticate('jwt', {session: false}),
+    // passport.authenticate('jwt', {session: false}),
     postController.createPost
 );
 
 // get all user and followed user posts
 router.get('/posts/:profileid', 
-    passport.authenticate('jwt', {session: false}),
+    // passport.authenticate('jwt', {session: false}),
     postController.getPosts
 );
 
@@ -48,7 +48,7 @@ router.patch(
 
 // get users posts for their profile
 router.get('/posts/profile/:profileid',
-    passport.authenticate('jwt', {session: false}),
+    // passport.authenticate('jwt', {session: false}),
     postController.getProfilePosts
 );
 
@@ -63,7 +63,7 @@ router.post(
 
 // get all comments on a post
 router.get('/posts/:postid/comments', 
-    passport.authenticate('jwt', {session: false}),
+    // passport.authenticate('jwt', {session: false}),
     commentController.getComments
 );
 
@@ -89,13 +89,13 @@ router.post('/logout', userController.logout);
 
 // get all users
 router.get('/users',
-    passport.authenticate('jwt', {session: false}),
+    // passport.authenticate('jwt', {session: false}),
     profileController.getUsers
 );
 
 // get user profile
 router.get('/profile/:profileid',
-    passport.authenticate('jwt', {session: false}), 
+    // passport.authenticate('jwt', {session: false}), 
     profileController.getProfile
 );
 
