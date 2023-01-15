@@ -84,3 +84,7 @@ exports.logout = (req, res, next) => {
         res.redirect('/api');
     })
 }
+
+exports.verifyToken = (req, res) => {
+    res.status(200).json({ message: 'token verified' })
+}
